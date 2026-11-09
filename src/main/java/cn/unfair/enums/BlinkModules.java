@@ -9,4 +9,5 @@ public enum BlinkModules {
     DISPLACE,
     NO_FALL,
     VELOCITY,
+    BLOCK_HIT,
 }

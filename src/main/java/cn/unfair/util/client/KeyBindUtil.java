@@ -21,6 +21,11 @@ public class KeyBindUtil {
         KeyBinding.setKeyBindState(keyCode, pressed);
     }
 
+    public static void unpressKey(KeyBinding binding) {
+        // 1.8.9 KeyBinding.unpressKey() is protected; callers use this helper.
+        binding.pressed = false;
+    }
+
     public static void pressKeyOnce(int keyCode) {
         KeyBinding.onTick(keyCode);
     }
