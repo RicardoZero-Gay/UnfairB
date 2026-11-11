@@ -13,6 +13,7 @@ import cn.unfair.events.UpdateEvent;
 import cn.unfair.module.Module;
 import cn.unfair.module.modules.combat.blockhit.AmunixBlockHit;
 import cn.unfair.property.properties.*;
+import cn.unfair.util.client.ChatUtil;
 import cn.unfair.util.client.TimerUtil;
 import cn.unfair.util.player.ItemUtil;
 import cn.unfair.util.client.KeyBindUtil;
@@ -39,6 +40,7 @@ public class BlockHit extends Module {
     public final IntProperty unblockTime = new IntProperty("Unblock ms", 200, 50, 350, () -> mode.getValue() == 3);
     public final IntProperty unblockDelay = new IntProperty("Unblock Delay ms", 0, 0, 100, () -> mode.getValue() == 3);
     public final FloatProperty firstMeleeRange = new FloatProperty("First Melee Range", 3.5F, 2.0F, 5.0F, () -> mode.getValue() == 3);
+    public final BooleanProperty debug = new BooleanProperty("Debug", false, () -> mode.getValue() >= 2);
     private final AmunixBlockHit amunix = new AmunixBlockHit(this);
 
     private final IntProperty stopTime = new IntProperty("Stop Ticks", 2, 1, 5, () -> mode.getValue() == 0);
@@ -65,12 +67,19 @@ public class BlockHit extends Module {
     private boolean canBlock;
     private int getBlockTicks;
     private EntityLivingBase target;
+    private long lastDebugAt;
     private TimerUtil timer = new TimerUtil();
 
     @EventTarget(Priority.LOWEST)
     public void onTick(TickEvent event) {
         if (mode.getValue() >= 2) {
-            if (event.type() == EventType.PRE) amunix.tick();
+            if (event.type() == EventType.PRE) {
+                amunix.tick();
+                if (debug.getValue() && System.currentTimeMillis() - lastDebugAt > 1000L) {
+                    lastDebugAt = System.currentTimeMillis();
+                    ChatUtil.sendFormatted("&7[BlockHit] " + amunix.debugInfo());
+                }
+            }
             return;
         }
         if (!this.isEnabled() || mc.thePlayer == null || mc.theWorld == null) return;

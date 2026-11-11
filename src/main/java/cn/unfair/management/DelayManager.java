@@ -8,6 +8,10 @@ import cn.unfair.events.TickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
+import cn.unfair.Unfair;
+import cn.unfair.module.SubModule;
+import cn.unfair.module.modules.combat.Velocity;
+import cn.unfair.module.modules.combat.velocity.B4Mode;
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.login.client.C00PacketLoginStart;
 import net.minecraft.network.login.client.C01PacketEncryptionResponse;
@@ -32,6 +36,18 @@ public class DelayManager {
         return mc.thePlayer != null && mc.theWorld != null && mc.getNetHandler() != null;
     }
 
+    private B4Mode getB4Mode() {
+        if (Unfair.moduleManager == null) {
+            return null;
+        }
+        Velocity velocity = (Velocity) Unfair.moduleManager.getModule(Velocity.class);
+        if (velocity == null) {
+            return null;
+        }
+        SubModule subModule = velocity.getCurrentSubModule();
+        return subModule instanceof B4Mode b4 ? b4 : null;
+    }
+
     public boolean shouldDelay(Packet<?> packet) {
         if (!this.isInWorld()) {
             this.delayedPacket.clear();
@@ -51,6 +67,19 @@ public class DelayManager {
                 Entity entity = s19.getEntity(mc.theWorld);
                 if (entity != null && (!entity.equals(mc.thePlayer) || s19.getOpCode() != 2)) {
                     return false;
+                }
+            }
+            if (this.delayModule == DelayModules.VELOCITY) {
+                B4Mode b4 = this.getB4Mode();
+                if (b4 != null) {
+                    switch (b4.handleDelayedPacket(packet)) {
+                        case DROP:
+                            return true;
+                        case PROCESS_NOW:
+                            return false;
+                        default:
+                            break;
+                    }
                 }
             }
             this.queueDelayedPacket(packet);

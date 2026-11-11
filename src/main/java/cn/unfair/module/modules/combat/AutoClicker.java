@@ -1,5 +1,6 @@
 package cn.unfair.module.modules.combat;
 
+import cn.unfair.Unfair;
 import cn.unfair.event.EventTarget;
 import cn.unfair.event.types.EventType;
 import cn.unfair.event.types.Priority;
@@ -37,6 +38,11 @@ public class AutoClicker extends Module {
 
     public AutoClicker() {
         super("AutoClicker", false);
+    }
+
+    public static boolean clicking() {
+        AutoClicker autoClicker = (AutoClicker) Unfair.moduleManager.getModule(AutoClicker.class);
+        return autoClicker != null && autoClicker.isEnabled() && autoClicker.clickPending;
     }
 
     private long getNextClickDelay() {

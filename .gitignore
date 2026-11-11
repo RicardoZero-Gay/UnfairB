@@ -5,3 +5,7 @@ out/
 run/
 *.class
 /.idea/
+/.harness/
+/decomp/
+/tools/inject/*.jar
+/tools/inject/*.class

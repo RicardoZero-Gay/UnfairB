@@ -298,6 +298,27 @@ public final class AmunixBlockHit {
         return false;
     }
 
+    public String debugInfo() {
+        if (mc.thePlayer == null || mc.theWorld == null) {
+            return "no world";
+        }
+        boolean sword = mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword;
+        EntityPlayer t = this.target;
+        return "state=" + predictState
+                + " rmbMouse=" + KeyBindUtil.isKeyDown(mc.gameSettings.keyBindUseItem.getKeyCode())
+                + " rmbBind=" + mc.gameSettings.keyBindUseItem.isKeyDown()
+                + " sword=" + sword
+                + " gui=" + (mc.currentScreen != null)
+                + " focus=" + mc.inGameHasFocus
+                + " active=" + Display.isActive()
+                + " inter=" + interactable()
+                + " blocking=" + blocking
+                + " using=" + mc.thePlayer.isUsingItem()
+                + " owns=" + ownsInput
+                + " target=" + (t == null ? "null" : t.getName() + "@" + String.format(java.util.Locale.ROOT, "%.2f", distance(t)))
+                + " avail=" + available();
+    }
+
     private double distance(EntityLivingBase entity) {
         AxisAlignedBB a = mc.thePlayer.getEntityBoundingBox();
         AxisAlignedBB b = entity.getEntityBoundingBox();
